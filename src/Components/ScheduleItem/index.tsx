@@ -9,6 +9,15 @@ export interface ScheduleItemProps {
     speaker: Speaker | null;
 }
 
+const UTC_FMT = new Intl.DateTimeFormat(
+    "en-GB-u-hc-h23",
+    { hour: "2-digit", minute: "2-digit", timeZone: "UTC" },
+  );
+  const LOCAL_FMT = new Intl.DateTimeFormat(
+    "en-GB-u-hc-h23",
+    { hour: "2-digit", minute: "2-digit" },
+  );
+
 export default class ScheduleItem extends React.Component<ScheduleItemProps, {}> {
     state = {
         isLoaded: false,
@@ -59,6 +68,8 @@ export default class ScheduleItem extends React.Component<ScheduleItemProps, {}>
 
         const SpeakerNameTag = isTalk && speaker!.social ? 'a' : 'p';
         const title = isTalk ? speaker!.title : schedule.title;
+        const [hourString, minString] = schedule.time.split(':', 2)
+        const time = new Date(Date.UTC(2020, 3, 25, parseInt(hourString), parseInt(minString)))
 
         return (
             <li className={scheduleItemClasses}>
@@ -70,7 +81,20 @@ export default class ScheduleItem extends React.Component<ScheduleItemProps, {}>
                             {speaker!.name}
                         </SpeakerNameTag>
                     )}
-                    <span className="schedule-item--time">{schedule.time}</span>
+                    <span className="schedule-item--time">
+                        <span className="schedule-item--time-row">
+                            <span className="schedule-item--time-tz">UTC</span>
+                            <span className="schedule-item--time-time">
+                                {UTC_FMT.format(time)}
+                            </span>
+                        </span>
+                        <span className="schedule-item--time-row">
+                            <span className="schedule-item--time-tz">Local</span>
+                            <span className="schedule-item--time-time">
+                                {LOCAL_FMT.format(time)}
+                            </span>
+                        </span>
+                    </span>
                 </div>
             </li>
         );
